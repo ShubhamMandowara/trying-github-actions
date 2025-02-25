@@ -1,12 +1,12 @@
-# name: CI workflow
+name: CI workflow
 
-# on:
-#   push:
-#     branches:
-#       main
-# jobs:
-#   say_hello:
-#     runs-on: ubuntu-latest
-#     steps:
-#       - name: Print Hello World
-#         run: echo "Hello, Github actions"
+on:
+  push:
+    branches:
+      main
+jobs:
+  say_hello:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print Hello World
+        run: echo "Hello, Github actions"
