@@ -9,4 +9,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Print Hello World
-        uses: echo "Hello, Github actions"
+        run: echo "Hello, Github actions"
