@@ -5,11 +5,8 @@ on:
     branches:
       main
 jobs:
-  build:
+  say_hello:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
       - name: Print Hello World
         uses: echo "Hello, Github actions"
