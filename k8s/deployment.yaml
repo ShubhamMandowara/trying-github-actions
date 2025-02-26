@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: text-processor
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: text-processor
+  template:
+    metadata:
+      labels:
+        app: text-processor
+    spec:
+      containers:
+      - name: text-processor
+        image-processor: ${CONTAINER_REGISTRY}/text-processor:${IMAGE_TAG}
+        ports:
+        - containerPort: 5000
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "200m"
+            memory: "256Mi"
+

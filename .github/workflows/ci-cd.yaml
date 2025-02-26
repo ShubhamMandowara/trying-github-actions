@@ -1,0 +1,49 @@
+name: CI/CD Pipeline
+
+on:
+    workflow_dispatch
+    # push:
+    #     branches: [main]
+    # pull_request:
+    #     branches: [main]
+env:
+    AZURE_CONTAINER_REGISTRY: ${{secrets.AZURE_CONTAINER_REGISTRY}}
+    CONTAINER_NAME: text-processor
+    RESOURCE_GROUP: text-prcessor-rg
+    CLUSTER_NAME: text-processor-ask
+
+jobs:
+    build-and-deploy:
+        runs-on: ubunut-latest
+        steps:
+            - uses: action/checkout@v4
+            
+            - name: Azure login
+              uses: azure/login@v1
+              with:
+                creds: ${{secrets.AZURE_CREDENTIALS}}
+            - name: Build and push image to ACR
+              uses: azure/docker-login@v1
+              with:
+                login-server: ${{ env.AZURE_CONTAINER_REGISTRY }}
+                username: ${{ secrets.REGISTRY_USERNAME }}
+                password: ${{ secrets.REGISTRY_PASSWORD }}
+            - run: |
+                docker build . -t ${{ env.AZURE_CONTAINER_REGISTRY }}/${{ env.CONTAINER_NAME }}:${{ github.sha }}
+                docker push ${{ env.AZURE_CONTAINER_REGISTRY }}/${{ env.CONTAINER_NAME }}:${{ github.sha }}
+            - name: Set AKS context
+              uses: azure/aks-set-context@v1
+              with:
+                creds: ${{ secrets.AZURE_CREDENTIALS }}
+                resource-group: ${{ env.RESOURCE_GROUP }}
+                cluster-name: ${{ env.CLUSTER_NAME }}
+            - name: Deploy to AKS
+              run: |
+                sed -i 's|${CONTAINER_REGISTRY}|${{ env.AZURE_CONTAINER_REGISTRY }}|g' k8s/deployment.yaml
+                sed -i 's|${IMAGE_TAG}|${{ github.sha }}|g' k8s/deployment.yaml
+                kubectl apply -f k8s/
+            
+
+
+
+
